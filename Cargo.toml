@@ -57,8 +57,14 @@ wayland = ["libcosmic/wayland", "cosmic-files/wayland"]
 inherits = "release"
 debug = true
 
-[patch.crates-io]
-license = { git = "https://github.com/evenorog/license.git" }
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+
+#[patch.crates-io]
+#license = { git = "https://github.com/evenorog/license.git" }
 
 # [patch.'https://github.com/pop-os/libcosmic']
 # libcosmic = { path = "../libcosmic" }
