@@ -48,7 +48,7 @@ features = ["about", "multi-window", "tokio", "winit", "surface-message"]
 fork = "0.2"
 
 [features]
-default = ["dbus-config", "wgpu", "wayland"]
+default = ["dbus-config", "wgpu"]
 dbus-config = ["libcosmic/dbus-config"]
 wgpu = ["libcosmic/wgpu", "cosmic-files/wgpu"]
 wayland = ["libcosmic/wayland", "cosmic-files/wayland"]
