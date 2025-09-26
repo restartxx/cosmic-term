@@ -1,4 +1,4 @@
-name: Build for Android
+name: Build for aarch64-musl
 
 on:
   push:
@@ -13,25 +13,21 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Install Rust toolchain
+    - name: Install Rust toolchain and musl target
       uses: dtolnay/rust-toolchain@stable
       with:
-        targets: aarch64-linux-android
+        targets: aarch64-unknown-linux-musl
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-
-    - name: Install NDK and Configure Linker
-      run: |
-        sdkmanager --install "ndk;25.2.9519653"
-        echo '' >> .cargo/config.toml
-        echo 'linker = "/usr/lib/android-sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android31-clang"' >> .cargo/config.toml
+    - name: Install musl-tools for cross-compilation
+      run: sudo apt-get update && sudo apt-get install -y musl-tools
 
     - name: Build the project
-      run: cargo build --release --target aarch64-linux-android
+      run: |
+        export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-musl-gcc
+        cargo build --release --target aarch64-unknown-linux-musl
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: cosmic-term-android
-        path: target/aarch64-linux-android/release/cosmic-term
+        name: cosmic-term-musl
+        path: target/aarch64-unknown-linux-musl/release/cosmic-term
