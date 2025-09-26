@@ -1,0 +1,38 @@
+name: Build for Android
+
+on:
+  push:
+    branches: [ "main" ] # Dispara o build a cada push na branch 'main'
+  workflow_dispatch: # Permite disparar o build manualmente na interface do GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Usa a versão mais recente do Ubuntu como ambiente
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4 # Baixa o seu código para o ambiente
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable # Instala o Rust estável
+      with:
+        targets: aarch64-linux-android # Instala o alvo de compilação para Android
+
+    - name: Install Android NDK and set up linker
+      run: |
+        # Instala o NDK do Android, que contém o linker e as bibliotecas necessárias
+        echo "y" | sudo /usr/bin/sdkmanager "ndk;25.2.9519653"
+        
+        # Cria um arquivo de configuração para o Cargo apontar para o linker correto do NDK
+        mkdir -p .cargo
+        echo '[target.aarch64-linux-android]' >> .cargo/config.toml
+        echo 'linker = "/usr/lib/android-sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android31-clang"' >> .cargo/config.toml
+
+    - name: Build the project
+      run: cargo build --release --target aarch64-linux-android
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: cosmic-term-android # Nome do arquivo que será gerado
+        path: target/aarch64-linux-android/release/cosmic-term # Caminho para o binário compilado
