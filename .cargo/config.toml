@@ -1,0 +1,5 @@
+[target.aarch64-linux-android]
+rustflags = [
+  "-C", "target-cpu=cortex-a77",
+  "-C", "target-feature=+neon,+aes,+sha2,+crc"
+]
